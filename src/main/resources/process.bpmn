@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_19z1971" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.2.3">
+  <bpmn:collaboration id="Collaboration_0pdvq0z">
+    <bpmn:participant id="Participant_1ewz1fq" name="Получение координат долготы и широты по адресу" processRef="Process_02b50wk" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_02b50wk" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_1hlxytu">
+      <bpmn:lane id="Lane_184jg8z" name="view-place-service">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_0hvputl</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_0fk6j7v</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_0i1p4bu</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0u2edmn" name="dadata,ru">
+        <bpmn:flowNodeRef>Task_1kw1gwu</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_04zs2ou</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_1l7xqr3</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" name="Ввести адрес">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="address" label="Адрес" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1x60496</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1x60496" sourceRef="StartEvent_1" targetRef="Task_0i1p4bu" />
+    <bpmn:sequenceFlow id="SequenceFlow_0nntqe2" sourceRef="Task_0i1p4bu" targetRef="Task_1kw1gwu" />
+    <bpmn:serviceTask id="Task_1kw1gwu" name="Проверка запроса" camunda:class="camunda.CoordinateDelegate">
+      <bpmn:incoming>SequenceFlow_0nntqe2</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1x4gfhk</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1x4gfhk" sourceRef="Task_1kw1gwu" targetRef="ExclusiveGateway_1l7xqr3" />
+    <bpmn:sequenceFlow id="SequenceFlow_1ccohk2" name="Нет" sourceRef="ExclusiveGateway_1l7xqr3" targetRef="EndEvent_04zs2ou" />
+    <bpmn:sequenceFlow id="SequenceFlow_13wpnk5" name="Вернуть координаты" sourceRef="ExclusiveGateway_1l7xqr3" targetRef="Task_0fk6j7v">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${toShow}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1qvky63" sourceRef="Task_0fk6j7v" targetRef="EndEvent_0hvputl" />
+    <bpmn:endEvent id="EndEvent_04zs2ou">
+      <bpmn:incoming>SequenceFlow_1ccohk2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_1l7xqr3" name="Запрос корректный?">
+      <bpmn:incoming>SequenceFlow_1x4gfhk</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ccohk2</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_13wpnk5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_0hvputl">
+      <bpmn:incoming>SequenceFlow_1qvky63</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_0fk6j7v" name="Отобразить координаты адреса" camunda:expression="Address">
+      <bpmn:incoming>SequenceFlow_13wpnk5</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1qvky63</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_0i1p4bu" name="Запрос к dadata.ru" camunda:expression="Send request">
+      <bpmn:incoming>SequenceFlow_1x60496</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0nntqe2</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0pdvq0z">
+      <bpmndi:BPMNShape id="Participant_1ewz1fq_di" bpmnElement="Participant_1ewz1fq" isHorizontal="true">
+        <dc:Bounds x="112" y="100" width="728" height="385" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="192" y="342" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="175" y="385" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_184jg8z_di" bpmnElement="Lane_184jg8z" isHorizontal="true">
+        <dc:Bounds x="142" y="235" width="698" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0u2edmn_di" bpmnElement="Lane_0u2edmn" isHorizontal="true">
+        <dc:Bounds x="142" y="100" width="698" height="135" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1x60496_di" bpmnElement="SequenceFlow_1x60496">
+        <di:waypoint x="228" y="360" />
+        <di:waypoint x="330" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0nntqe2_di" bpmnElement="SequenceFlow_0nntqe2">
+        <di:waypoint x="380" y="320" />
+        <di:waypoint x="380" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_195i9lj_di" bpmnElement="Task_1kw1gwu">
+        <dc:Bounds x="330" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1l7xqr3_di" bpmnElement="ExclusiveGateway_1l7xqr3" isMarkerVisible="true">
+        <dc:Bounds x="555" y="145" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="547" y="108" width="66" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1x4gfhk_di" bpmnElement="SequenceFlow_1x4gfhk">
+        <di:waypoint x="430" y="170" />
+        <di:waypoint x="555" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_04zs2ou_di" bpmnElement="EndEvent_04zs2ou">
+        <dc:Bounds x="722" y="152" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ccohk2_di" bpmnElement="SequenceFlow_1ccohk2">
+        <di:waypoint x="605" y="170" />
+        <di:waypoint x="722" y="170" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="654" y="152" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_13wpnk5_di" bpmnElement="SequenceFlow_13wpnk5">
+        <di:waypoint x="580" y="195" />
+        <di:waypoint x="580" y="320" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="566" y="255" width="61" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0hvputl_di" bpmnElement="EndEvent_0hvputl">
+        <dc:Bounds x="722" y="342" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1qvky63_di" bpmnElement="SequenceFlow_1qvky63">
+        <di:waypoint x="630" y="360" />
+        <di:waypoint x="722" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1oqirq1_di" bpmnElement="Task_0fk6j7v">
+        <dc:Bounds x="530" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0kvdfqa_di" bpmnElement="Task_0i1p4bu">
+        <dc:Bounds x="330" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
